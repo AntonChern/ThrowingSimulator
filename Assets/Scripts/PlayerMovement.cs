@@ -20,6 +20,6 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = moveDirection * speed + new Vector3(0f, rb.linearVelocity.y, 0f);
         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
     }
 }
