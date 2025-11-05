@@ -4,34 +4,22 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float gravity;
-    private CharacterController controller;
-    private Vector3 velocity;
+    private Rigidbody rb;
 
     private void Start()
     {
-        controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        Vector3 moveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-
-        if (controller.isGrounded && velocity.y < 0)
-        {
-            velocity.y = 0f; // Reset vertical velocity if grounded
-        }
-
-        velocity.y -= gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        Vector3 moveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
+        rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
 
         if (moveDirection.magnitude <= Vector3.kEpsilon)
             return;
 
-        //if (!controller.isGrounded)
-        //{
-        //    moveDirection.y -= gravity * Time.deltaTime;
-        //}
-        controller.Move(moveDirection * speed * Time.deltaTime);
+        rb.linearVelocity = moveDirection * speed + new Vector3(0f, rb.linearVelocity.y, 0f);
         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
