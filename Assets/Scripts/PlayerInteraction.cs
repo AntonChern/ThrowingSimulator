@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -7,7 +8,7 @@ public class PlayerInteraction : MonoBehaviour
     private Vector3 objectPosition = new Vector3(0f, -0.5f, 1f);
     private Vector3 objectRotation = new Vector3(0f, 0f, 0f);
 
-    private void Update()
+    private void LateUpdate()
     {
         if (takenObject)
         {
@@ -16,7 +17,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -33,11 +34,24 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Take()
     {
-        RaycastHit hit;
-        if (Physics.CapsuleCast(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.499f, transform.forward, out hit, 1.2f, interactMask))
+        Action<Collider> take = (collider) =>
         {
-            takenObject = hit.collider.gameObject;
+            takenObject = collider.gameObject;
             takenObject.transform.SetParent(transform);
+        };
+
+        RaycastHit hit;
+        Collider[] colliders = Physics.OverlapCapsule(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, interactMask);
+        if (colliders.Length != 0)
+        {
+            take(colliders[0]);
+        }
+        else
+        {
+            if (Physics.CapsuleCast(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, transform.forward, out hit, 1f, interactMask))
+            {
+                take(hit.collider);
+            }
         }
     }
 
