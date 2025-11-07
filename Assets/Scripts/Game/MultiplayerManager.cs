@@ -2,6 +2,7 @@ using Colyseus;
 using Colyseus.Schema;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MultiplayerManager : MonoBehaviour, IPlayMode
 {
@@ -9,8 +10,6 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
     private ColyseusRoom<ThrowingSimulatorState> room;
     public string localSessionId;
 
-    //public GameObject playerPrefab;
-    //public GameObject cratePrefab;
     private Dictionary<string, GameObject> spawnedPlayers = new Dictionary<string, GameObject>();
     private List<GameObject> spawnedCrates = new List<GameObject>();
 
@@ -40,8 +39,21 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         }
     }
 
+    public void Exit()
+    {
+        room?.Leave();
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+
+    private void OnDisable()
+    {
+        if (room == null) return;
+        room.OnStateChange -= OnStateChangeHandler;
+    }
+
     private void GenerateCrates(ThrowingSimulatorState state)
     {
+        Debug.Log($"WTF1 {state.crates.Count}");
         for (int i = 0; i < state.crates.Count; i++)
         {
             GameObject crate = Instantiate(
@@ -53,10 +65,12 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
             crate.transform.localScale = Vector3.one * state.crates[i].scale;
             spawnedCrates.Add(crate);
         }
+        Debug.Log($"WTF2 {state.crates.Count}");
     }
 
-    private void HandlePlayers(ThrowingSimulatorState state)
+    private void HandlePlayers()
     {
+        var state = room.State;
         foreach (string key in state.players.Keys)
         {
             var player = state.players[key];
@@ -76,10 +90,12 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         }
     }
 
-    private void HandleCrates(ThrowingSimulatorState state)
+    private void HandleCrates()
     {
+        var state = room.State;
         for (int i = 0; i < state.crates.Count; i++)
         {
+            Debug.Log($"{state.crates[i].author} {state.crates[i].position.x}, {state.crates[i].position.y}, {state.crates[i].position.z} -  {i + 1}/{state.crates.Count} {spawnedCrates.Count}");
             var synchronizer = spawnedCrates[i].GetComponent<CrateSynchronizationHandler>();
             synchronizer.IsAuthor = localSessionId == state.crates[i].author;
             synchronizer.UpdateActualState(
@@ -92,13 +108,18 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
     private void OnStateChangeHandler(ThrowingSimulatorState state, bool isFirstState)
     {
         Debug.Log("State changed!");
+        Debug.Log($"NUM1 {state.crates.Count}");
         if (isFirstState)
         {
+            Debug.Log($"NUM2 {state.crates.Count}");
             GenerateCrates(state);
             return;
         }
-        HandlePlayers(state);
-        HandleCrates(state);
+        Debug.Log($"NUM3 {state.crates.Count}");
+        HandlePlayers();
+        Debug.Log($"NUM4 {state.crates.Count}");
+        HandleCrates();
+        Debug.Log($"NUM5 {state.crates.Count}");
     }
 
     void OnPlayerAdd(string key, Player player)
@@ -117,6 +138,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         var synchronizer = newPlayer.GetComponent<PlayerSynchronizationHandler>();
         synchronizer.Id = key;
         synchronizer.IsAuthor = key == localSessionId;
+        Debug.Log($"Room1 {room.State.crates.Count}");
     }
 
     void OnPlayerRemove(string key, Player player)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SingleplayerManager : MonoBehaviour, IPlayMode
 {
@@ -51,5 +52,10 @@ public class SingleplayerManager : MonoBehaviour, IPlayMode
     public void SendPlayerMoving(string id)
     {
         Debug.Log($"No implementation");
+    }
+
+    public void Exit()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }

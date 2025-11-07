@@ -14,29 +14,37 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         string playerMode = PlayerPrefs.GetString("Mode");
-        //if (playerMode == "Multiplayer")
-        //{
+        if (playerMode == "Multiplayer")
+        {
             playMode = gameObject.AddComponent<MultiplayerManager>();
-        //}
-        //else
-        //{
-        //    playMode = gameObject.AddComponent<SingleplayerManager>();
-        //}
+        }
+        else
+        {
+            playMode = gameObject.AddComponent<SingleplayerManager>();
+        }
     }
 
     public void SendCrateInteracting(string id, int index, bool isTaken)
     {
-        playMode.SendCrateInteracting(id, index, isTaken);
+        playMode?.SendCrateInteracting(id, index, isTaken);
     }
 
     public void SendCrateMoving(int index)
     {
-        playMode.SendCrateMoving(index);
+        playMode?.SendCrateMoving(index);
     }
 
     public void SendPlayerMoving(string id)
     {
-        playMode.SendPlayerMoving(id);
+        playMode?.SendPlayerMoving(id);
+    }
+
+    public void Exit()
+    {
+        playMode?.Exit();
     }
 }
