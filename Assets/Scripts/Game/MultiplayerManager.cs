@@ -15,7 +15,8 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
 
     private async void Awake()
     {
-        client = new ColyseusClient("ws://localhost:2567"); // Replace with your server address
+        client = new ColyseusClient("ws://45.12.72.33:2567");
+        //client = new ColyseusClient("ws://localhost:2567"); // Replace with your server address
         try
         {
             room = await client.JoinOrCreate<ThrowingSimulatorState>("my_room");
