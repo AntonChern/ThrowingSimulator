@@ -18,5 +18,5 @@ To start the game, follow these steps:
 * In the main menu, select the desired game mode: single-player or multiplayer.
 
 # Contacts
-Telegram: @ant_1008
-Mail: anton_chernikov1@list.ru
+* Telegram: @ant_1008
+* Mail: anton_chernikov1@list.ru
