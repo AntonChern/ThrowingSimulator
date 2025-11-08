@@ -37,11 +37,9 @@ public abstract class SynchronizationHandler : MonoBehaviour
 
     public void UpdateActualState(Vector3 position, Quaternion rotation)
     {
-        if (!isAuthor)
-        {
-            actualPosition = position;
-            actualRotation = rotation;
-        }
+        actualPosition = position;
+        actualRotation = rotation;
+        SetInterpolatingPoints();
     }
 
     protected abstract void SendMoving(Transform transform);

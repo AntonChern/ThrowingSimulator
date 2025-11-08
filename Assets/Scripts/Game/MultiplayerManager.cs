@@ -94,7 +94,6 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         var state = room.State;
         for (int i = 0; i < spawnedCrates.Count; i++)
         {
-            Debug.Log($"{state.crates[i].author} {state.crates[i].position.x}, {state.crates[i].position.y}, {state.crates[i].position.z} -  {i + 1}/{state.crates.Count} {spawnedCrates.Count}");
             var synchronizer = spawnedCrates[i].GetComponent<CrateSynchronizationHandler>();
             synchronizer.IsAuthor = localSessionId == state.crates[i].author;
             synchronizer.UpdateActualState(
