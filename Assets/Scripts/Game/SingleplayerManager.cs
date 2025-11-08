@@ -53,6 +53,11 @@ public class SingleplayerManager : MonoBehaviour, IPlayMode
     {
         Debug.Log($"No implementation");
     }
+    
+    public void SendCrateAuthority(string id, int index)
+    {
+        Debug.Log($"No implementation");
+    }
 
     public void Exit()
     {

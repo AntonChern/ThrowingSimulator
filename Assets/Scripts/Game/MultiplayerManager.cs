@@ -192,6 +192,18 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         }
     }
 
+    public void SendCrateAuthority(string id, int index)
+    {
+        if (room != null)
+        {
+            room.Send("change_authority", new
+            {
+                index = index,
+                author = id
+            });
+        }
+    }
+
     void OnApplicationQuit()
     {
         room?.Leave();

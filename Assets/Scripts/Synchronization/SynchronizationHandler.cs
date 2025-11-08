@@ -39,7 +39,6 @@ public abstract class SynchronizationHandler : MonoBehaviour
     {
         actualPosition = position;
         actualRotation = rotation;
-        SetInterpolatingPoints();
     }
 
     protected abstract void SendMoving(Transform transform);
@@ -67,23 +66,20 @@ public abstract class SynchronizationHandler : MonoBehaviour
 
     protected void LateUpdate()
     {
-        if (!isAuthor)
+        if (!isAuthor && changable)
         {
-            if (changable)
+            timer += Time.deltaTime;
+            transform.position = Vector3.Lerp(startPosition, targetPosition, timer / synchronizationStep);
+            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, timer / synchronizationStep);
+            if (timer >= synchronizationStep)
             {
-                timer += Time.deltaTime;
-                transform.position = Vector3.Lerp(startPosition, targetPosition, timer / synchronizationStep);
-                transform.rotation = Quaternion.Lerp(startRotation, targetRotation, timer / synchronizationStep);
-                if (timer >= synchronizationStep)
-                {
-                    timer = 0f;
-                    SetInterpolatingPoints();
-                }
-            }
-            else
-            {
+                timer = 0f;
                 SetInterpolatingPoints();
             }
+        }
+        else
+        {
+            SetInterpolatingPoints();
         }
     }
 }

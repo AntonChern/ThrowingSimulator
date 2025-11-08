@@ -50,6 +50,12 @@ export class ThrowingSimulatorRoom extends Room<ThrowingSimulatorState> {
                 player.crateIndex = -1;
             }
         });
+
+        this.onMessage("change_authority", (client, message) => {
+            this.state.lastChangedBy = client.sessionId;
+            const crate = this.state.crates[message.index];
+            crate.author = message.author;
+        });
     }
 
     onJoin(client: Client, options: any) {

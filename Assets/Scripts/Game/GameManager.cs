@@ -43,6 +43,11 @@ public class GameManager : MonoBehaviour
         playMode?.SendPlayerMoving(id);
     }
 
+    public void SendCrateAuthority(string id, int index)
+    {
+        playMode?.SendCrateAuthority(id, index);
+    }
+
     public void Exit()
     {
         playMode?.Exit();

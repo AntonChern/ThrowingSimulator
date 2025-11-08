@@ -21,10 +21,9 @@ public class PlayerInteraction : MonoBehaviour
             collisionSynchronizer != null &&
             !collisionSynchronizer.IsAuthor)
         {
-            GameManager.Instance.SendCrateInteracting(
+            GameManager.Instance.SendCrateAuthority(
                 synchronizer.Id,
-                collisionSynchronizer.Index,
-                false
+                collisionSynchronizer.Index
             );
         }
     }
