@@ -137,6 +137,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         Debug.Log("Player removed: " + key);
         if (spawnedPlayers.ContainsKey(key))
         {
+            spawnedPlayers[key].GetComponent<Grabber>().Throw(false);
             Destroy(spawnedPlayers[key]);
             spawnedPlayers.Remove(key);
         }
