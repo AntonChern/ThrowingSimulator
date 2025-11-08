@@ -40,6 +40,7 @@ public class Grabber : MonoBehaviour
         synchronizer.changable = false;
         if (needToSend)
         {
+            synchronizer.IsAuthor = true;
             GameManager.Instance.SendCrateInteracting(
                 GetComponent<PlayerSynchronizationHandler>().Id,
                 takenObjectIndex,
@@ -64,6 +65,7 @@ public class Grabber : MonoBehaviour
         }
         if (needToSend)
         {
+            synchronizer.IsAuthor = true;
             GameManager.Instance.SendCrateInteracting(
                 GetComponent<PlayerSynchronizationHandler>().Id,
                 takenObjectIndex,

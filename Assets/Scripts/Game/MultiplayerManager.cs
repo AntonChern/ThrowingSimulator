@@ -61,7 +61,9 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 new Vector3(state.crates[i].position.x, state.crates[i].position.y, state.crates[i].position.z),
                 new Quaternion(state.crates[i].rotation.x, state.crates[i].rotation.y, state.crates[i].rotation.z, state.crates[i].rotation.w)
             );
-            crate.GetComponent<CrateSynchronizationHandler>().Index = i;
+            var synchronizer = crate.GetComponent<CrateSynchronizationHandler>();
+            synchronizer.Index = i;
+            synchronizer.IsAuthor = localSessionId == state.crates[i].author;
             crate.transform.localScale = Vector3.one * state.crates[i].scale;
             spawnedCrates.Add(crate);
         }
@@ -72,14 +74,23 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         var state = room.State;
         foreach (string key in state.players.Keys)
         {
+            if (localSessionId == key) continue;
             var player = state.players[key];
             if (player.crateIndex + 1 > Mathf.Epsilon) // player.crateIndex != -1
             {
-                spawnedPlayers[key].GetComponent<Grabber>().Take(spawnedCrates[(int)player.crateIndex], false);
+                var grabber = spawnedPlayers[key].GetComponent<Grabber>();
+                if (!grabber.TakenObject)
+                {
+                    grabber.Take(spawnedCrates[(int)player.crateIndex], false);
+                }
             }
             else
             {
-                spawnedPlayers[key].GetComponent<Grabber>().Throw(false);
+                var grabber = spawnedPlayers[key].GetComponent<Grabber>();
+                if (grabber.TakenObject)
+                {
+                    grabber.Throw(false);
+                }
             }
             var synchronizer = spawnedPlayers[key].GetComponent<PlayerSynchronizationHandler>();
             synchronizer.UpdateActualState(
@@ -105,12 +116,14 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
 
     private void OnStateChangeHandler(ThrowingSimulatorState state, bool isFirstState)
     {
-        Debug.Log("State changed!");
+        Debug.Log($"State changed by {state.lastChangedBy}!");
         if (isFirstState)
         {
             GenerateCrates(state);
             return;
         }
+        if (localSessionId == state.lastChangedBy)
+            return;
         HandlePlayers();
         HandleCrates();
     }

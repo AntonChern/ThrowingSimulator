@@ -18,6 +18,9 @@ public abstract class SynchronizationHandler : MonoBehaviour
     private Vector3 actualPosition;
     private Quaternion actualRotation;
 
+    private Vector3 prevPosition;
+    private Quaternion prevRotation;
+
     private Vector3 startPosition;
     private Vector3 targetPosition;
 
@@ -45,9 +48,16 @@ public abstract class SynchronizationHandler : MonoBehaviour
 
     protected void Update()
     {
-        if (isAuthor)
+        if (isAuthor &&
+            (prevPosition - transform.position != Vector3.zero ||
+            prevRotation.eulerAngles - transform.eulerAngles != Vector3.zero))
         {
             SendMoving(transform);
+            actualPosition = transform.position;
+            actualRotation = transform.rotation;
+
+            prevPosition = transform.position;
+            prevRotation = transform.rotation;
             if (transform.position.y < -1f)
             {
                 transform.position = Vector3.zero + Vector3.up;

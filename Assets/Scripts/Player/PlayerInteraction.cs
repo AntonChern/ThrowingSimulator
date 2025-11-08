@@ -6,12 +6,14 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private LayerMask interactMask;
     private Grabber grabber;
     private PlayerSynchronizationHandler synchronizer;
+    private Rigidbody rigidbody;
 
     private void Start()
     {
         interactMask = (1 << LayerMask.NameToLayer("Interactable"));
         grabber = GetComponent<Grabber>();
         synchronizer = GetComponent<PlayerSynchronizationHandler>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -19,8 +21,11 @@ public class PlayerInteraction : MonoBehaviour
         var collisionSynchronizer = collision.gameObject.GetComponent<CrateSynchronizationHandler>();
         if (synchronizer.IsAuthor &&
             collisionSynchronizer != null &&
-            !collisionSynchronizer.IsAuthor)
+            !collisionSynchronizer.IsAuthor &&
+            rigidbody.linearVelocity.magnitude > 1f)
         {
+            Debug.Log($"Velocity {rigidbody.linearVelocity.magnitude}");
+            collisionSynchronizer.IsAuthor = true;
             GameManager.Instance.SendCrateAuthority(
                 synchronizer.Id,
                 collisionSynchronizer.Index
@@ -49,12 +54,14 @@ public class PlayerInteraction : MonoBehaviour
         Collider[] colliders = Physics.OverlapCapsule(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, interactMask);
         if (colliders.Length != 0)
         {
+            colliders[0].gameObject.GetComponent<CrateSynchronizationHandler>().IsAuthor = true;
             grabber.Take(colliders[0].gameObject, true);
         }
         else
         {
             if (Physics.CapsuleCast(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, transform.forward, out hit, 1f, interactMask))
             {
+                hit.collider.gameObject.GetComponent<CrateSynchronizationHandler>().IsAuthor = true;
                 grabber.Take(hit.collider.gameObject, true);
             }
         }
