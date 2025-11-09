@@ -13,7 +13,7 @@ public class PlayerSynchronizationHandler : SynchronizationHandler
         }
     }
 
-    protected override void SendMoving(Transform transform)
+    protected override void SendMoving()
     {
         GameManager.Instance.SendPlayerMoving(id);
     }

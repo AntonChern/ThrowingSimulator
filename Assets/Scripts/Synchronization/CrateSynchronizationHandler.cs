@@ -13,7 +13,7 @@ public class CrateSynchronizationHandler : SynchronizationHandler
         }
     }
 
-    protected override void SendMoving(Transform transform)
+    protected override void SendMoving()
     {
         GameManager.Instance.SendCrateMoving(Index);
     }

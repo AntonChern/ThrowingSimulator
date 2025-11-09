@@ -122,8 +122,6 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
             GenerateCrates(state);
             return;
         }
-        if (localSessionId == state.lastChangedBy)
-            return;
         HandlePlayers();
         HandleCrates();
     }

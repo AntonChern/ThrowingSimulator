@@ -44,7 +44,7 @@ public abstract class SynchronizationHandler : MonoBehaviour
         actualRotation = rotation;
     }
 
-    protected abstract void SendMoving(Transform transform);
+    protected abstract void SendMoving();
 
     protected void Update()
     {
@@ -52,7 +52,7 @@ public abstract class SynchronizationHandler : MonoBehaviour
             (prevPosition - transform.position != Vector3.zero ||
             prevRotation.eulerAngles - transform.eulerAngles != Vector3.zero))
         {
-            SendMoving(transform);
+            SendMoving();
             actualPosition = transform.position;
             actualRotation = transform.rotation;
 
