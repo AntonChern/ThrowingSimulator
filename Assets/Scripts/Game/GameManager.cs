@@ -37,10 +37,20 @@ public class GameManager : MonoBehaviour
     {
         playMode?.SendCrateMoving(index);
     }
-
-    public void SendPlayerMoving(string id)
+    
+    public void SendCrateVelocity(int index)
     {
-        playMode?.SendPlayerMoving(id);
+        playMode?.SendCrateVelocity(index);
+    }
+
+    public void SendPlayerLocation(string id)
+    {
+        playMode?.SendPlayerLocation(id);
+    }
+
+    public void SendPlayerMovement(string id, Vector3 movement)
+    {
+        playMode?.SendPlayerMovement(id, movement);
     }
 
     public void SendCrateAuthority(string id, int index)

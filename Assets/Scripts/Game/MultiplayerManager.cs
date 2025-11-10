@@ -74,14 +74,13 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         var state = room.State;
         foreach (string key in state.players.Keys)
         {
-            if (localSessionId == key) continue;
             var player = state.players[key];
-            if (player.crateIndex + 1 > Mathf.Epsilon) // player.crateIndex != -1
+            if (Mathf.Abs(player.crateIndex + 1) > Mathf.Epsilon) // player.crateIndex != -1
             {
                 var grabber = spawnedPlayers[key].GetComponent<Grabber>();
                 if (!grabber.TakenObject)
                 {
-                    grabber.Take(spawnedCrates[(int)player.crateIndex], false);
+                    grabber.Take(spawnedCrates[(int)player.crateIndex]);
                 }
             }
             else
@@ -89,7 +88,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 var grabber = spawnedPlayers[key].GetComponent<Grabber>();
                 if (grabber.TakenObject)
                 {
-                    grabber.Throw(false);
+                    grabber.Throw();
                 }
             }
             var synchronizer = spawnedPlayers[key].GetComponent<PlayerSynchronizationHandler>();
@@ -97,6 +96,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 new Vector3(player.position.x, player.position.y, player.position.z),
                 new Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w)
             );
+            synchronizer.UpdateMovement(new Vector3(player.movement.x, player.movement.y, player.movement.z));
         }
     }
 
@@ -111,6 +111,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 new Vector3(state.crates[i].position.x, state.crates[i].position.y, state.crates[i].position.z),
                 new Quaternion(state.crates[i].rotation.x, state.crates[i].rotation.y, state.crates[i].rotation.z, state.crates[i].rotation.w)
             );
+            synchronizer.UpdateVelocity(new Vector3(state.crates[i].velocity.x, state.crates[i].velocity.y, state.crates[i].velocity.z));
         }
     }
 
@@ -134,7 +135,7 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
             new Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w));
         if (key == localSessionId)
         {
-            newPlayer.AddComponent<PlayerMovement>();
+            newPlayer.AddComponent<PlayerInput>();
             newPlayer.AddComponent<PlayerInteraction>();
         }
         spawnedPlayers.Add(key, newPlayer);
@@ -148,13 +149,13 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
         Debug.Log("Player removed: " + key);
         if (spawnedPlayers.ContainsKey(key))
         {
-            spawnedPlayers[key].GetComponent<Grabber>().Throw(false);
+            spawnedPlayers[key].GetComponent<Grabber>().Throw();
             Destroy(spawnedPlayers[key]);
             spawnedPlayers.Remove(key);
         }
     }
 
-    public void SendPlayerMoving(string id)
+    public void SendPlayerLocation(string id)
     {
         if (room != null)
         {
@@ -168,6 +169,20 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 rotY = transform.rotation.y,
                 rotZ = transform.rotation.z,
                 rotW = transform.rotation.w
+            });
+        }
+    }
+
+    public void SendPlayerMovement(string id, Vector3 movement)
+    {
+        if (room != null)
+        {
+            room.Send("force_player", new
+            {
+                id = id,
+                x = movement.x,
+                y = movement.y,
+                z = movement.z
             });
         }
     }
@@ -186,7 +201,22 @@ public class MultiplayerManager : MonoBehaviour, IPlayMode
                 rotX = transform.rotation.x,
                 rotY = transform.rotation.y,
                 rotZ = transform.rotation.z,
-                rotW = transform.rotation.w,
+                rotW = transform.rotation.w
+            });
+        }
+    }
+
+    public void SendCrateVelocity(int index)
+    {
+        if (room != null)
+        {
+            Rigidbody rb = spawnedCrates[index].GetComponent<Rigidbody>();
+            room.Send("force_crate", new
+            {
+                index = index,
+                velX = rb.linearVelocity.x,
+                velY = rb.linearVelocity.y,
+                velZ = rb.linearVelocity.z
             });
         }
     }

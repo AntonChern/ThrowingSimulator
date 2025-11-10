@@ -4,6 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 6;
     private Rigidbody rb;
+    public Vector3 movement = Vector3.zero;
 
     private void Start()
     {
@@ -12,14 +13,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 moveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
         rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
 
-        if (moveDirection.magnitude <= Vector3.kEpsilon)
+        if (movement.magnitude <= Vector3.kEpsilon)
             return;
 
-        rb.linearVelocity = moveDirection * speed + new Vector3(0f, rb.linearVelocity.y, 0f);
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+        var moveDirection = movement * speed + new Vector3(0f, rb.linearVelocity.y, 0f); 
+        rb.linearVelocity = moveDirection;
+        Quaternion targetRotation = Quaternion.LookRotation(movement);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
     }
 }

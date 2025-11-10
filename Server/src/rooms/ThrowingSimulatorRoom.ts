@@ -15,11 +15,20 @@ export class ThrowingSimulatorRoom extends Room<ThrowingSimulatorState> {
             console.log("Iteration:", i);
             const crate = new Crate();
             crate.owner = "";
+            crate.velocity = new Vector_3(0, 0, 0);
             crate.position = new Vector_3(getRandom(-7, 7), getRandom(1, 3), getRandom(-6, 1));
             crate.rotation = new Vector_4(0, 0, 0, 1);
             crate.scale = getRandom(0.6, 1);
             this.state.crates.push(crate);
         }
+
+        this.onMessage("force_player", (client, message) => {
+            this.state.lastChangedBy = client.sessionId;
+            const player = this.state.players.get(message.id);
+            if (player) {
+                player.movement = new Vector_3(message.x, message.y, message.z);
+            }
+        });
 
         this.onMessage("move_player", (client, message) => {
             this.state.lastChangedBy = client.sessionId;
@@ -28,6 +37,12 @@ export class ThrowingSimulatorRoom extends Room<ThrowingSimulatorState> {
                 player.position = new Vector_3(message.posX, message.posY, message.posZ);
                 player.rotation = new Vector_4(message.rotX, message.rotY, message.rotZ, message.rotW);
             }
+        });
+
+        this.onMessage("force_crate", (client, message) => {
+            this.state.lastChangedBy = client.sessionId;
+            const crate = this.state.crates[message.index];
+            crate.velocity = new Vector_3(message.velX, message.velY, message.velZ);
         });
 
         this.onMessage("move_crate", (client, message) => {
@@ -62,6 +77,7 @@ export class ThrowingSimulatorRoom extends Room<ThrowingSimulatorState> {
         console.log(client.sessionId, "joined!");
         const player = new Player();
         player.crateIndex = -1;
+        player.movement = new Vector_3(0, 0, 0);
         player.position = new Vector_3(getRandom(-7, 7), getRandom(1, 3), getRandom(-6, 1));
         player.rotation = new Vector_4(0, 1, 0, 0);
         this.state.players.set(client.sessionId, player);

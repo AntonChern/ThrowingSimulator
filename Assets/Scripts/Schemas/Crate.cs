@@ -10,24 +10,28 @@ using Colyseus.Schema;
 using UnityEngine.Scripting;
 #endif
 
-public partial class Crate : Schema {
+public partial class Crate : Schema
+{
 #if UNITY_5_3_OR_NEWER
-[Preserve]
+    [Preserve]
 #endif
-public Crate() { }
-	[Type(0, "string")]
-	public string author = default(string);
+    public Crate() { }
+    [Type(0, "string")]
+    public string author = default(string);
 
-	[Type(1, "string")]
-	public string owner = default(string);
+    [Type(1, "string")]
+    public string owner = default(string);
 
-	[Type(2, "ref", typeof(Vector_3))]
-	public Vector_3 position = null;
+    [Type(2, "ref", typeof(Vector_3))]
+    public Vector_3 velocity = null;
 
-	[Type(3, "ref", typeof(Vector_4))]
-	public Vector_4 rotation = null;
+    [Type(3, "ref", typeof(Vector_3))]
+    public Vector_3 position = null;
 
-	[Type(4, "number")]
-	public float scale = default(float);
+    [Type(4, "ref", typeof(Vector_4))]
+    public Vector_4 rotation = null;
+
+    [Type(5, "number")]
+    public float scale = default(float);
 }
 

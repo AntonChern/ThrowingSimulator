@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SingleplayerManager : MonoBehaviour, IPlayMode
 {
+    private GameObject player;
+    private List<GameObject> crates = new List<GameObject>();
+
     private void Start()
     {
         GenerateCrates();
@@ -23,6 +27,7 @@ public class SingleplayerManager : MonoBehaviour, IPlayMode
             synchronizer.Index = i;
             synchronizer.IsAuthor = true;
             crate.transform.localScale = Vector3.one * Random.Range(0.6f, 1f);
+            crates.Add(crate);
         }
     }
 
@@ -32,16 +37,32 @@ public class SingleplayerManager : MonoBehaviour, IPlayMode
             GameManager.Instance.playerPrefab,
             new Vector3(0f, 1f, 0f),
             Quaternion.Euler(new Vector3(0f, 180f, 0f)));
-        newPlayer.AddComponent<PlayerMovement>();
+        newPlayer.AddComponent<PlayerInput>();
         newPlayer.AddComponent<PlayerInteraction>();
         var synchronizer = newPlayer.GetComponent<PlayerSynchronizationHandler>();
         synchronizer.Id = "Name";
         synchronizer.IsAuthor = true;
+        player = newPlayer;
     }
 
     public void SendCrateInteracting(string id, int index, bool isTaken)
     {
-        Debug.Log($"No implementation");
+        if (isTaken)
+        {
+            var grabber = player.GetComponent<Grabber>();
+            if (!grabber.TakenObject)
+            {
+                grabber.Take(crates[index]);
+            }
+        }
+        else
+        {
+            var grabber = player.GetComponent<Grabber>();
+            if (grabber.TakenObject)
+            {
+                grabber.Throw();
+            }
+        }
     }
 
     public void SendCrateMoving(int index)
@@ -49,11 +70,21 @@ public class SingleplayerManager : MonoBehaviour, IPlayMode
         Debug.Log($"No implementation");
     }
 
-    public void SendPlayerMoving(string id)
+    public void SendCrateVelocity(int index)
     {
         Debug.Log($"No implementation");
     }
-    
+
+    public void SendPlayerLocation(string id)
+    {
+        Debug.Log($"No implementation");
+    }
+
+    public void SendPlayerMovement(string id, Vector3 movement)
+    {
+        player.GetComponent<PlayerSynchronizationHandler>().UpdateMovement(movement);
+    }
+
     public void SendCrateAuthority(string id, int index)
     {
         Debug.Log($"No implementation");

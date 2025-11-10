@@ -3,7 +3,6 @@ using UnityEngine;
 public class Grabber : MonoBehaviour
 {
     [SerializeField] private GameObject takenObject;
-    private int takenObjectIndex;
     [SerializeField] private GameObject crateCollider;
 
     public GameObject TakenObject
@@ -28,28 +27,18 @@ public class Grabber : MonoBehaviour
         }
     }
 
-    public void Take(GameObject gameObject, bool needToSend)
+    public void Take(GameObject gameObject)
     {
         takenObject = gameObject;
         var synchronizer = takenObject.GetComponent<CrateSynchronizationHandler>();
-        takenObjectIndex = synchronizer.Index;
         crateCollider.SetActive(true);
         takenObject.transform.SetParent(transform);
         takenObject.GetComponent<Rigidbody>().isKinematic = true;
         takenObject.GetComponent<BoxCollider>().enabled = false;
         synchronizer.changable = false;
-        if (needToSend)
-        {
-            synchronizer.IsAuthor = true;
-            GameManager.Instance.SendCrateInteracting(
-                GetComponent<PlayerSynchronizationHandler>().Id,
-                takenObjectIndex,
-                true
-            );
-        }
     }
 
-    public void Throw(bool needToSend)
+    public void Throw()
     {
         if (!takenObject) return;
         crateCollider.SetActive(false);
@@ -61,18 +50,9 @@ public class Grabber : MonoBehaviour
         if (synchronizer.IsAuthor)
         {
             Rigidbody rb = takenObject.GetComponent<Rigidbody>();
-            rb.linearVelocity = GetComponent<Rigidbody>().linearVelocity + (transform.forward * 15f + Vector3.up * 5f);
-        }
-        if (needToSend)
-        {
-            synchronizer.IsAuthor = true;
-            GameManager.Instance.SendCrateInteracting(
-                GetComponent<PlayerSynchronizationHandler>().Id,
-                takenObjectIndex,
-                false
-            );
+            var velocity = GetComponent<Rigidbody>().linearVelocity + (transform.forward * 15f + Vector3.up * 5f);
+            rb.linearVelocity = velocity;
         }
         takenObject = null;
-        takenObjectIndex = -1;
     }
 }

@@ -30,6 +30,7 @@ export class Vector_4 extends Schema {
 
 export class Player extends Schema {
     @type("number") crateIndex: number;
+    @type(Vector_3) movement: Vector_3;
     @type(Vector_3) position: Vector_3;
     @type(Vector_4) rotation: Vector_4;
 }
@@ -37,6 +38,7 @@ export class Player extends Schema {
 export class Crate extends Schema {
     @type("string") author: string;
     @type("string") owner: string;
+    @type(Vector_3) velocity: Vector_3;
     @type(Vector_3) position: Vector_3;
     @type(Vector_4) rotation: Vector_4;
     @type("number") scale: number;

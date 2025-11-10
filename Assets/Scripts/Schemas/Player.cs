@@ -19,9 +19,12 @@ public Player() { }
 	public float crateIndex = default(float);
 
 	[Type(1, "ref", typeof(Vector_3))]
+	public Vector_3 movement = null;
+
+	[Type(2, "ref", typeof(Vector_3))]
 	public Vector_3 position = null;
 
-	[Type(2, "ref", typeof(Vector_4))]
+	[Type(3, "ref", typeof(Vector_4))]
 	public Vector_4 rotation = null;
 }
 

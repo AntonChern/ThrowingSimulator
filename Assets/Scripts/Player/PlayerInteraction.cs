@@ -6,14 +6,13 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private LayerMask interactMask;
     private Grabber grabber;
     private PlayerSynchronizationHandler synchronizer;
-    private Rigidbody rigidbody;
+    private int takenObjectIndex = -1;
 
     private void Start()
     {
         interactMask = (1 << LayerMask.NameToLayer("Interactable"));
         grabber = GetComponent<Grabber>();
         synchronizer = GetComponent<PlayerSynchronizationHandler>();
-        rigidbody = GetComponent<Rigidbody>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -22,9 +21,8 @@ public class PlayerInteraction : MonoBehaviour
         if (synchronizer.IsAuthor &&
             collisionSynchronizer != null &&
             !collisionSynchronizer.IsAuthor &&
-            rigidbody.linearVelocity.magnitude > 1f)
+            collisionSynchronizer.velocity.magnitude < 0.1f)
         {
-            Debug.Log($"Velocity {rigidbody.linearVelocity.magnitude}");
             collisionSynchronizer.IsAuthor = true;
             GameManager.Instance.SendCrateAuthority(
                 synchronizer.Id,
@@ -39,7 +37,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (grabber.TakenObject)
             {
-                grabber.Throw(true);
+                Throw();
             }
             else
             {
@@ -48,22 +46,45 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    public void Take()
+    private void Throw()
+    {
+        GameManager.Instance.SendCrateInteracting(
+            GetComponent<PlayerSynchronizationHandler>().Id,
+            takenObjectIndex,
+            false
+        );
+        takenObjectIndex = -1;
+    }
+
+    private GameObject FindInteractableObject()
     {
         RaycastHit hit;
         Collider[] colliders = Physics.OverlapCapsule(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, interactMask);
         if (colliders.Length != 0)
         {
-            colliders[0].gameObject.GetComponent<CrateSynchronizationHandler>().IsAuthor = true;
-            grabber.Take(colliders[0].gameObject, true);
+            return colliders[0].gameObject;
         }
-        else
+        if (Physics.CapsuleCast(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, transform.forward, out hit, 1f, interactMask))
         {
-            if (Physics.CapsuleCast(transform.position - transform.up * 0.5f, transform.position + transform.up * 0.5f, 0.5f, transform.forward, out hit, 1f, interactMask))
-            {
-                hit.collider.gameObject.GetComponent<CrateSynchronizationHandler>().IsAuthor = true;
-                grabber.Take(hit.collider.gameObject, true);
-            }
+            return hit.collider.gameObject;
+        }
+        return null;
+    }
+
+    private void Take()
+    {
+        GameObject takenObject = FindInteractableObject();
+
+        if (takenObject)
+        {
+            var synchronizer = takenObject.GetComponent<CrateSynchronizationHandler>();
+            synchronizer.IsAuthor = true;
+            takenObjectIndex = synchronizer.Index;
+            GameManager.Instance.SendCrateInteracting(
+                GetComponent<PlayerSynchronizationHandler>().Id,
+                takenObjectIndex,
+                true
+            );
         }
     }
 }

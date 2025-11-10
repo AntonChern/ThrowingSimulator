@@ -28,9 +28,9 @@ public abstract class SynchronizationHandler : MonoBehaviour
     private Quaternion targetRotation;
 
     private float timer = 0f;
-    private float synchronizationStep = 0.1f;
+    private float synchronizationStep = 0.05f;
 
-    private void Start()
+    protected virtual void Start()
     {
         actualPosition = transform.position;
         actualRotation = transform.rotation;
@@ -46,7 +46,7 @@ public abstract class SynchronizationHandler : MonoBehaviour
 
     protected abstract void SendMoving();
 
-    protected void Update()
+    protected virtual void Update()
     {
         if (isAuthor &&
             (prevPosition - transform.position != Vector3.zero ||
@@ -74,7 +74,7 @@ public abstract class SynchronizationHandler : MonoBehaviour
         startRotation = transform.rotation;
     }
 
-    protected void LateUpdate()
+    protected virtual void LateUpdate()
     {
         if (!isAuthor && changable)
         {

@@ -12,6 +12,39 @@ public class CrateSynchronizationHandler : SynchronizationHandler
             index = value;
         }
     }
+    public Vector3 velocity;
+    private Rigidbody rb;
+
+    protected override void Start()
+    {
+        base.Start();
+        rb = GetComponent<Rigidbody>();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isAuthor && !rb.isKinematic)
+        {
+            rb.linearVelocity = velocity;
+        }
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (isAuthor)
+        {
+            GameManager.Instance.SendCrateVelocity(index);
+        }
+    }
+
+    public void UpdateVelocity(Vector3 velocity)
+    {
+        if (rb)
+        {
+            this.velocity = velocity;
+        }
+    }
 
     protected override void SendMoving()
     {

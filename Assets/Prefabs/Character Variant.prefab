@@ -132,11 +132,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2475271833625441677, guid: b3d6caa2d04379f4898332c975666312, type: 3}
   m_PrefabInstance: {fileID: 2523830207791243178}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &726289008832442525 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2959496292414680887, guid: b3d6caa2d04379f4898332c975666312, type: 3}
-  m_PrefabInstance: {fileID: 2523830207791243178}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5601934876520809369
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -228,6 +223,9 @@ PrefabInstance:
       addedObject: {fileID: 5322325574251384963}
     - targetCorrespondingSourceObject: {fileID: 8618018203274716382, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 5523315078931220290}
+    - targetCorrespondingSourceObject: {fileID: 8618018203274716382, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 7592539770523134643}
     - targetCorrespondingSourceObject: {fileID: 8618018203274716382, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       insertIndex: -1
@@ -265,6 +263,20 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
+--- !u!114 &5523315078931220290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4190401482319669063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79d4eee969557594d952e7e75ba2f4c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  speed: 6
+  movement: {x: 0, y: 0, z: 0}
 --- !u!114 &7592539770523134643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSynchronizationHandler
   isAuthor: 0
-  isForceChangable: 1
+  changable: 1
   id: 
 --- !u!114 &7721910957650628260
 MonoBehaviour:
@@ -293,7 +305,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Grabber
   takenObject: {fileID: 0}
-  crate: {fileID: 726289008832442525}
   crateCollider: {fileID: 4976824147187905568}
 --- !u!4 &9140328277106417322 stripped
 Transform:
